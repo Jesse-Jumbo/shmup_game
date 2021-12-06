@@ -1,0 +1,2 @@
+ShmupGame/img/
+img/
