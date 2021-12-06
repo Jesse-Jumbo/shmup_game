@@ -22,6 +22,7 @@ for i in range(8):
     mobs.add(m)
     all_sprites.add(m)
 bullets = pygame.sprite.Group()
+chances = 0
 
 # Game loop
 running = True
@@ -51,9 +52,11 @@ while running:
         all_sprites.add(m)
 
     # check to see if a mob hit the player
-    hits = pygame.sprite.spritecollide(player, mobs, False, pygame.sprite.collide_circle)
-    if hits:
-        running = False
+    hits = pygame.sprite.spritecollide(player, mobs, True, pygame.sprite.collide_circle)
+    for count in hits:
+        chances += 1
+        if chances == 3:
+            running = False
 
     # Draw / render
     screen.fill(BLACK)
