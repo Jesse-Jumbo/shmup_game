@@ -31,6 +31,8 @@ pygame.display.set_caption("Shump!")               # 設定任何我們想要的
 clock = pygame.time.Clock()                        # 設定一個測定遊戲時間，用來確保我們運行的每一幀都是正確的
 
 font_name = pygame.font.match_font('arial')        # the function can searches the system for the closest matching font.
+
+
 def draw_text(surf, text, size, x, y):             # define the draw_text
     font = pygame.font.Font(font_name, size)       # defing a variable(font) to draw text in screen
     text_surface = font.render(text, True, WHITE)  # font.render(): calculating what pattern of pixels is needed (True means Anti-aliasing)
@@ -38,10 +40,12 @@ def draw_text(surf, text, size, x, y):             # define the draw_text
     text_rect.midtop = (x, y)                      # Align text_rect.midtop with location of draw_text
     surf.blit(text_surface, text_rect)             # Set text_surface onto surf(draw_text on the there) from text_rect with blit()
 
+
 def newmob():
     m = Mob()
     all_sprites.add(m)
     mobs.add(m)
+
 
 def draw_shield_bar(surf, x, y, pct):
     if pct < 0:
@@ -53,6 +57,7 @@ def draw_shield_bar(surf, x, y, pct):
     fill_rect = pygame.Rect(x, y, fill, BAR_HEIGHT)
     pygame.draw.rect(surf, GREEN, fill_rect)
     pygame.draw.rect(surf, WHITE, outline_rect, 2)
+
 
 class Player(pygame.sprite.Sprite):                # 宣告一個class Player把pygame.sprite.Sprite賦予給它
     def __init__(self):                            # 必須要有的初始化函式__init__你才能啟動整個函式
@@ -97,6 +102,7 @@ class Player(pygame.sprite.Sprite):                # 宣告一個class Player把
             bullets.add(bullet)                        # 把bullet加入bullets(用於下面hits判斷)
             shoot_sound.play()
 
+
 class Mob(pygame.sprite.Sprite):                   # pygame.sprite for Sprite for class Mob
     def __init__(self):                            # 初始化函式，用於啟動函式
         pygame.sprite.Sprite.__init__(self)        # 初始化Sprite引用到pygame.sprite
@@ -134,6 +140,7 @@ class Mob(pygame.sprite.Sprite):                   # pygame.sprite for Sprite fo
             self.rect.y = random.randrange(-100, -40)                   # rect隨機出現在Y軸的(-100到-40)範圍內
             self.speed_y = random.randrange(1, 8)                       # Y軸的速度隨機範圍在(1到8)掉落
 
+
 class Bullet(pygame.sprite.Sprite):                # 宣告一個Bullet類別屬於pygame.sprite.Sprite
     def __init__(self, x, y):                      # 初始化Bullet的self, x, y，用於啟動、更新它
         pygame.sprite.Sprite.__init__(self)        # 初始化Sprite引用到pygame.sprite
@@ -149,6 +156,7 @@ class Bullet(pygame.sprite.Sprite):                # 宣告一個Bullet類別屬
         # kill if it moves off the top of the screen
         if self.rect.bottom < 0:                   # 如果rect的bottom小於0(也就是X<0 => 超出螢幕上方界限)
             self.kill()                            # pygame內建函數.kill()可從任何Group中刪除sprite(在這就是刪除Bullet)
+
 
 class Explosion(pygame.sprite.Sprite):
     def __init__(self, center, size):

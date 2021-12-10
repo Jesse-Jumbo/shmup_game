@@ -8,6 +8,7 @@ from ShmupModule.draw_text import draw_text
 from ShmupModule.setting import *
 from ShmupModule.newmob import newmob
 from ShmupModule.draw_shield_bar import draw_shield_bar
+from ShmupModule.explosion import Explosion
 
 # initialize
 pygame.init()
@@ -38,12 +39,15 @@ while running:
         # check for closing window
         if event.type == pygame.QUIT:
             running = False
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
-                b = Bullet(player.rect.centerx, player.rect.top)
-                all_sprites.add(b)
-                bullets.add(b)
-                shoot_sound.play()
+    keystate = pygame.key.get_pressed()
+    if keystate[pygame.K_SPACE]:
+        now = pygame.time.get_ticks()
+        if now - player.last_shot > player.shoot_delay:
+            player.last_shot = now
+            bullet = Bullet(player.rect.centerx, player.rect.top)
+            all_sprites.add(bullet)
+            bullets.add(bullet)
+            shoot_sound.play()
 
     # Update
     all_sprites.update()
@@ -53,11 +57,15 @@ while running:
     for hit in hits:
         score += 50 - hit.radius
         random.choice(expl_sounds).play()
+        expl = Explosion(hit.rect.center, 'lg')
         newmob()
+        all_sprites.add(expl)
     # check to see if a mob hit the player
     hits = pygame.sprite.spritecollide(player, mobs, True, pygame.sprite.collide_circle)
     for hit in hits:
         player.shield -= hit.radius * 2
+        expl = Explosion(hit.rect.center, 'sm')
+        all_sprites.add(expl)
         newmob()
         if player.shield <= 0:
             running = False
