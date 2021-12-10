@@ -38,6 +38,22 @@ def draw_text(surf, text, size, x, y):             # define the draw_text
     text_rect.midtop = (x, y)                      # Align text_rect.midtop with location of draw_text
     surf.blit(text_surface, text_rect)             # Set text_surface onto surf(draw_text on the there) from text_rect with blit()
 
+def newmob():
+    m = Mob()
+    all_sprites.add(m)
+    mobs.add(m)
+
+def draw_shield_bar(surf, x, y, pct):
+    if pct < 0:
+        pct = 0
+    BAR_LENGTH = 100
+    BAR_HEIGHT = 10
+    fill = (pct / 100) * BAR_LENGTH
+    outline_rect = pygame.Rect(x, y, BAR_LENGTH, BAR_HEIGHT)
+    fill_rect = pygame.Rect(x, y, fill, BAR_HEIGHT)
+    pygame.draw.rect(surf, GREEN, fill_rect)
+    pygame.draw.rect(surf, WHITE, outline_rect, 2)
+
 class Player(pygame.sprite.Sprite):                # 宣告一個class Player把pygame.sprite.Sprite賦予給它
     def __init__(self):                            # 必須要有的初始化函式__init__你才能啟動整個函式
         pygame.sprite.Sprite.__init__(self)        # __init__初始化Sprite你才能引用它
@@ -49,6 +65,7 @@ class Player(pygame.sprite.Sprite):                # 宣告一個class Player把
         self.rect.centerx = WIDTH / 2              # 設rect的centerx在寬度的正中心
         self.rect.bottom = HEIGHT - 10             # 設rect的bottom在高度的-10處
         self.speedx = 0                            # x軸速度初始化為零
+        self.shield = 100
 
     def update(self):                              # 宣告一個update函式，在下面game loop引用到它
         self.speedx = 0                            # 將X軸速度固定在0
@@ -154,9 +171,7 @@ bullets = pygame.sprite.Group()                    # 將bullets添加到pygame.s
 player = Player()                                  # 用Player class宣告物件player
 all_sprites.add(player)                            # 把player加入all_sprites，並且因為player是一個Group()也是一個class才成立
 for i in range(8):                                 # 讓 i 循環8次，執行以下(使螢幕內的Mob總是維持在8位):
-    m = Mob()                                      # 宣告一個m到Mob()這個class，使其生成
-    all_sprites.add(m)                             # 將是Group()屬於class Mob()的m加到all_sprites中，使其更新
-    mobs.add(m)                                    # 將m加到mobs這個Group()中，使m在mobs這個Group，方便一次被判斷
+    newmob()
 
 score = 0                                          # initialize our score to 0 after game loop
 pygame.mixer.music.play(loops=-1)
@@ -183,20 +198,22 @@ while running:                                     # 執行running是True的時�
     for hit in hits:                               # 創建一個for迴圈hit是在hits裡循環(如果hits回傳的list裡有東西)，只要你一直有在攻擊，那麼就會一直循環(使上面的hits的Mobs不會全被bullets消除完)
         score += 50 - hit.radius                   # scroe const
         random.choice(expl_sounds).play()
-        m = Mob()                                  # 宣告一個m是Mob()這個class，使m會在Mob()內生成mob
-        all_sprites.add(m)                         # 將在Mob()的m加入到all_sprites，使m會在all_sprites裡屬於Mob()的update裡更新
-        mobs.add(m)                                # 將是all_sprites的m加入到mobs，使mobs內會不斷生成m，讓hits內的mobs可以被不斷的檢查
+        newmob()
 
     # check to see if a mob hit the player         # 第四個參數甚麼都不寫就默認是rect，你可以輸入你要判定的是甚麼，這裡更正為collide_circle
-    hits = pygame.sprite.spritecollide(player, mobs, False, pygame.sprite.collide_circle)             # 定義hits為引用pygame內建函數spritecollide(前兩個參數，為sprite(前者)與要檢查是否碰撞到它的Group(後者), 回傳list(儲存所有碰撞到的所有事件(如果沒有則為空list))，後參數True代表kill，False代表保留)來判斷重疊
-    if hits:                                       # 如果hits是...(如果if判斷式內的參數有東西，默認為真 => 執行要求)
-        running = False                            # runing為False(也就是將執行while迴圈的條件設為不成立 = 停止更新遊戲結束)
+    hits = pygame.sprite.spritecollide(player, mobs, True, pygame.sprite.collide_circle)             # 定義hits為引用pygame內建函數spritecollide(前兩個參數，為sprite(前者)與要檢查是否碰撞到它的Group(後者), 回傳list(儲存所有碰撞到的所有事件(如果沒有則為空list))，後參數True代表kill，False代表保留)來判斷重疊
+    for hit in hits:                                       # 如果hits是...(如果if判斷式內的參數有東西，默認為真 => 執行要求)
+        player.shield -= hit.radius * 2
+        newmob()
+        if player.shield <= 0:
+            running = False                            # runing為False(也就是將執行while迴圈的條件設為不成立 = 停止更新遊戲結束)
 
     # Draw / render
     screen.fill(BLACK)                             # 設定螢幕填滿(你想要的XX色)
     screen.blit(background, background_rect)       # set the background onto our screen, the backgroud is copy from background_rect with the blit function
     all_sprites.draw(screen)                       # 將sprites繪上螢幕
     draw_text(screen, str(score), 18, WIDTH / 2, 10)                   # (location, string of score, the font size, X, Y)
+    draw_shield_bar(screen, 5, 5, player.shield)
     # *after* drawing everything, flip the display
     pygame.display.flip()                          # 更新畫面，把我們所做的事讓電腦存取
 
