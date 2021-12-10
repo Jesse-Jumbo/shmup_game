@@ -66,6 +66,8 @@ class Player(pygame.sprite.Sprite):                # 宣告一個class Player把
         self.rect.bottom = HEIGHT - 10             # 設rect的bottom在高度的-10處
         self.speedx = 0                            # x軸速度初始化為零
         self.shield = 100
+        self.shoot_delay = 250
+        self.last_shot = pygame.time.get_ticks()
 
     def update(self):                              # 宣告一個update函式，在下面game loop引用到它
         self.speedx = 0                            # 將X軸速度固定在0
@@ -78,6 +80,8 @@ class Player(pygame.sprite.Sprite):                # 宣告一個class Player把
             self.speedx = 5                        # X軸速度5(往右)
         if keystate[pygame.K_d]:                   # 如果按下d鍵
             self.speedx = 8                        # X軸速度8(往右)
+        if keystate[pygame.K_SPACE]:
+            self.shoot()
         self.rect.x += self.speedx                 # 設定rect.x軸跟著self.X軸的speed變動
         if self.rect.right > WIDTH:                # 如果rect.right大於螢幕寬
             self.rect.right = WIDTH                # 把rect.right固定在螢幕寬
@@ -85,10 +89,13 @@ class Player(pygame.sprite.Sprite):                # 宣告一個class Player把
             self.rect.left = 0                     # 將rect.left等於0
 
     def shoot(self):                               # 在玩家這裡新增一項物件shoot子彈用來讓我們射擊
-        bullet = Bullet(self.rect.centerx, self.rect.top)               # 產生一個新的bullet它是來自Bullet(x, y)，它是從self玩家的rect的centerx(x軸中心)和top(最上方)生成
-        all_sprites.add(bullet)                    # 將bullet加入到all_sprites(方便被繪製和更新)
-        bullets.add(bullet)                        # 把bullet加入bullets(用於下面hits判斷)
-        shoot_sound.play()
+        now = pygame.time.get_ticks()
+        if now - self.last_shot > self.shoot_delay:
+            self.last_shot = now
+            bullet = Bullet(self.rect.centerx, self.rect.top)               # 產生一個新的bullet它是來自Bullet(x, y)，它是從self玩家的rect的centerx(x軸中心)和top(最上方)生成
+            all_sprites.add(bullet)                    # 將bullet加入到all_sprites(方便被繪製和更新)
+            bullets.add(bullet)                        # 把bullet加入bullets(用於下面hits判斷)
+            shoot_sound.play()
 
 class Mob(pygame.sprite.Sprite):                   # pygame.sprite for Sprite for class Mob
     def __init__(self):                            # 初始化函式，用於啟動函式
@@ -143,6 +150,30 @@ class Bullet(pygame.sprite.Sprite):                # 宣告一個Bullet類別屬
         if self.rect.bottom < 0:                   # 如果rect的bottom小於0(也就是X<0 => 超出螢幕上方界限)
             self.kill()                            # pygame內建函數.kill()可從任何Group中刪除sprite(在這就是刪除Bullet)
 
+class Explosion(pygame.sprite.Sprite):
+    def __init__(self, center, size):
+        pygame.sprite.Sprite.__init__(self)
+        self.size = size
+        self.image = explosion_anim[self.size][0]
+        self.rect = self.image.get_rect()
+        self.rect.center = center
+        self.fram = 0
+        self.last_update = pygame.time.get_ticks()
+        self.fram_rate = 50
+
+    def update(self):
+        now = pygame.time.get_ticks()
+        if now - self.last_update > self.fram_rate:
+            self.last_update = now
+            self.fram += 1
+            if self.fram == len(explosion_anim[self.size]):
+                self.kill()
+            else:
+                center = self.rect.center
+                self.image = explosion_anim[self.size][self.fram]
+                self.rect = self.image.get_rect()
+                self.rect.center = center
+
 # Load all game graphics                           # we have to use the convert function to load all graphics in the pygame
 background = pygame.image.load(path.join(img_dir, "Space Shooter Background - Imgur.png")).convert()
 background_rect = background.get_rect()            # define the background_rect equals the rectangle of background
@@ -156,6 +187,18 @@ meteor_list = ['meteorBrown_big1.png', 'meteorBrown_big2.png', 'meteorBrown_big3
                'meteorGrey_small1.png', 'meteorGrey_small2.png', 'meteorGrey_tiny1.png', 'meteorGrey_tiny2.png']
 for img in meteor_list:                            # declare a circle to append the all img from img_dir to loop in the meteor_list
     meteor_images.append(pygame.image.load(path.join(img_dir, img)).convert())
+
+explosion_anim = {}
+explosion_anim['lg'] = []
+explosion_anim['sm'] = []
+for i in range(9):
+    filename = f"regularExplosion0{i}.png"
+    img = pygame.image.load(path.join(img_dir, filename)).convert()
+    img.set_colorkey(BLACK)
+    img_lg = pygame.transform.scale(img, (75, 75))
+    explosion_anim['lg'].append(img_lg)
+    img_sm = pygame.transform.scale(img, (32, 32))
+    explosion_anim['sm'].append(img_sm)
 
 # Load all game sounds
 shoot_sound = pygame.mixer.Sound(path.join(snd_dir, 'pew.wav'))
@@ -186,9 +229,6 @@ while running:                                     # 執行running是True的時�
         # check for closing window
         if event.type == pygame.QUIT:              # event按下 是 pygame.QUIT時
             running = False                        # running會錯誤，也就是while running程式會關閉
-        elif event.type == pygame.KEYDOWN:         # 又如果按下的事件是KEYDOWN(pygame內建函數，意思是鍵盤上有鍵被按下)
-            if event.key == pygame.K_SPACE:        # 且key為K_SPACE空白鍵
-                player.shoot()                     # 引用上面在player定義的shoot()
 
     # Update
     all_sprites.update()                           # 在game loop裡update我們在上面所宣告的sprites
@@ -198,12 +238,16 @@ while running:                                     # 執行running是True的時�
     for hit in hits:                               # 創建一個for迴圈hit是在hits裡循環(如果hits回傳的list裡有東西)，只要你一直有在攻擊，那麼就會一直循環(使上面的hits的Mobs不會全被bullets消除完)
         score += 50 - hit.radius                   # scroe const
         random.choice(expl_sounds).play()
+        expl = Explosion(hit.rect.center, 'lg')
+        all_sprites.add(expl)
         newmob()
 
     # check to see if a mob hit the player         # 第四個參數甚麼都不寫就默認是rect，你可以輸入你要判定的是甚麼，這裡更正為collide_circle
     hits = pygame.sprite.spritecollide(player, mobs, True, pygame.sprite.collide_circle)             # 定義hits為引用pygame內建函數spritecollide(前兩個參數，為sprite(前者)與要檢查是否碰撞到它的Group(後者), 回傳list(儲存所有碰撞到的所有事件(如果沒有則為空list))，後參數True代表kill，False代表保留)來判斷重疊
     for hit in hits:                                       # 如果hits是...(如果if判斷式內的參數有東西，默認為真 => 執行要求)
         player.shield -= hit.radius * 2
+        expl = Explosion(hit.rect.center, 'sm')
+        all_sprites.add(expl)
         newmob()
         if player.shield <= 0:
             running = False                            # runing為False(也就是將執行while迴圈的條件設為不成立 = 停止更新遊戲結束)

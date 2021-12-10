@@ -9,7 +9,7 @@ WIDTH = 480
 HEIGHT = 600
 FPS = 60
 
-img_dir = path.join(path.dirname(__file__), '../img')
+img_dir = path.join(path.dirname(__file__), '../../img')
 snd_dir = path.join(path.dirname(__file__), '../../snd')
 
 # define colors
