@@ -51,3 +51,7 @@ for snd in ['expl3.wav', 'expl6.wav']:
     expl_sounds.append(pygame.mixer.Sound(path.join(snd_dir, snd)))
 pygame.mixer.music.load(path.join(snd_dir, 'tgfcoder-FrozenJam-SeamlessLoop.ogg'))
 pygame.mixer.music.set_volume(0.4)
+
+all_sprites = pygame.sprite.Group()             # for we can more convenient to update all sprite
+
+mobs = pygame.sprite.Group()
