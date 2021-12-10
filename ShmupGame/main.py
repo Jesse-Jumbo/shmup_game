@@ -1,3 +1,5 @@
+import random
+
 import pygame
 from ShmupModule.mob import Mob
 from ShmupModule.player import Player
@@ -7,6 +9,7 @@ from ShmupModule.setting import *
 
 # initialize
 pygame.init()
+pygame.mixer.init()
 
 all_sprites = pygame.sprite.Group()             # for we can more convenient to update all sprite
 
@@ -24,6 +27,7 @@ for i in range(8):
 bullets = pygame.sprite.Group()
 chances = 0
 
+pygame.mixer.music.play(loops=-1)
 # Game loop
 running = True
 while running:
@@ -39,6 +43,7 @@ while running:
                 b = Bullet(player.rect.centerx, player.rect.top)
                 all_sprites.add(b)
                 bullets.add(b)
+                shoot_sound.play()
 
     # Update
     all_sprites.update()
@@ -47,6 +52,7 @@ while running:
     hits = pygame.sprite.groupcollide(mobs, bullets, True, True)
     for hit in hits:
         score += 50 - hit.radius
+        random.choice(expl_sounds).play()
         m = Mob(meteor_images)
         mobs.add(m)
         all_sprites.add(m)

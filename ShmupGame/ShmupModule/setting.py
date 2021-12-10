@@ -3,11 +3,14 @@ from os import path
 
 import pygame
 
+pygame.mixer.init()
+
 WIDTH = 480
 HEIGHT = 600
 FPS = 60
 
 img_dir = path.join(path.dirname(__file__), '../img')
+snd_dir = path.join(path.dirname(__file__), '../../snd')
 
 # define colors
 WHITE = (255, 255, 255)
@@ -40,3 +43,11 @@ meteor_list = ['meteorBrown_big1.png', 'meteorBrown_big2.png', 'meteorBrown_big3
 meteor_images = []
 for img in meteor_list:
     meteor_images.append(pygame.image.load(path.join(img_dir, img)).convert())
+
+# Load all game sounds
+shoot_sound = pygame.mixer.Sound(path.join(snd_dir, 'pew.wav'))
+expl_sounds = []
+for snd in ['expl3.wav', 'expl6.wav']:
+    expl_sounds.append(pygame.mixer.Sound(path.join(snd_dir, snd)))
+pygame.mixer.music.load(path.join(snd_dir, 'tgfcoder-FrozenJam-SeamlessLoop.ogg'))
+pygame.mixer.music.set_volume(0.4)
