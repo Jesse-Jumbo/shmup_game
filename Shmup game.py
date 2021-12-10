@@ -8,6 +8,7 @@ from os import path  # the function os.path it's mean where is the correct locat
 import pygame  # 引用pygame
 
 img_dir = path.join(path.dirname(__file__), 'img') # define img_dir function equals path join from the file name, img name
+snd_dir = path.join(path.dirname(__file__), 'snd')
 
 # 設螢幕寬480，高600適合射擊遊戲，並且將幀數設成60，讓動作順暢快速
 WIDTH = 480
@@ -70,6 +71,7 @@ class Player(pygame.sprite.Sprite):                # 宣告一個class Player把
         bullet = Bullet(self.rect.centerx, self.rect.top)               # 產生一個新的bullet它是來自Bullet(x, y)，它是從self玩家的rect的centerx(x軸中心)和top(最上方)生成
         all_sprites.add(bullet)                    # 將bullet加入到all_sprites(方便被繪製和更新)
         bullets.add(bullet)                        # 把bullet加入bullets(用於下面hits判斷)
+        shoot_sound.play()
 
 class Mob(pygame.sprite.Sprite):                   # pygame.sprite for Sprite for class Mob
     def __init__(self):                            # 初始化函式，用於啟動函式
@@ -138,6 +140,14 @@ meteor_list = ['meteorBrown_big1.png', 'meteorBrown_big2.png', 'meteorBrown_big3
 for img in meteor_list:                            # declare a circle to append the all img from img_dir to loop in the meteor_list
     meteor_images.append(pygame.image.load(path.join(img_dir, img)).convert())
 
+# Load all game sounds
+shoot_sound = pygame.mixer.Sound(path.join(snd_dir, 'pew.wav'))
+expl_sounds = []
+for snd in ['expl3.wav', 'expl6.wav']:
+    expl_sounds.append(pygame.mixer.Sound(path.join(snd_dir, snd)))
+pygame.mixer.music.load(path.join(snd_dir, 'tgfcoder-FrozenJam-SeamlessLoop.ogg'))
+pygame.mixer.music.set_volume(0.4)
+
 all_sprites = pygame.sprite.Group()                # 使用Group宣告物件all_sprites # all_sprites拿來做為所有sprite物件的集合
 mobs = pygame.sprite.Group()                       # 宣告一個mobs，將它加入到pygame.sprite.Group
 bullets = pygame.sprite.Group()                    # 將bullets添加到pygame.sprite.Group作儲存
@@ -149,6 +159,7 @@ for i in range(8):                                 # 讓 i 循環8次，執行�
     mobs.add(m)                                    # 將m加到mobs這個Group()中，使m在mobs這個Group，方便一次被判斷
 
 score = 0                                          # initialize our score to 0 after game loop
+pygame.mixer.music.play(loops=-1)
 
 # Game loop
 running = True                                     # 設定一個變數running，他的初始值是Ture，所以只要我們設定running是False循環就會結束
@@ -171,6 +182,7 @@ while running:                                     # 執行running是True的時�
     hits = pygame.sprite.groupcollide(mobs, bullets, True, True)        # 定義hits為引用pygame內建函數groupcollide(前兩個參數為要檢查碰撞的Group類別, 後兩個分別與之對應, 回傳值是list(儲存所有碰撞到的所有事件(如果沒有則為空list))，True代表kill，False代表保留)來判斷重疊
     for hit in hits:                               # 創建一個for迴圈hit是在hits裡循環(如果hits回傳的list裡有東西)，只要你一直有在攻擊，那麼就會一直循環(使上面的hits的Mobs不會全被bullets消除完)
         score += 50 - hit.radius                   # scroe const
+        random.choice(expl_sounds).play()
         m = Mob()                                  # 宣告一個m是Mob()這個class，使m會在Mob()內生成mob
         all_sprites.add(m)                         # 將在Mob()的m加入到all_sprites，使m會在all_sprites裡屬於Mob()的update裡更新
         mobs.add(m)                                # 將是all_sprites的m加入到mobs，使mobs內會不斷生成m，讓hits內的mobs可以被不斷的檢查
