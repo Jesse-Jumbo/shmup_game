@@ -9,6 +9,7 @@ from ShmupModule.setting import *
 from ShmupModule.newmob import newmob
 from ShmupModule.draw_shield_bar import draw_shield_bar
 from ShmupModule.explosion import Explosion
+from ShmupModule.draw_lives import draw_lives
 
 # initialize
 pygame.init()
@@ -68,7 +69,14 @@ while running:
         all_sprites.add(expl)
         newmob()
         if player.shield <= 0:
-            running = False
+            death_explosion = Explosion(player.rect.center, 'player')
+            all_sprites.add(death_explosion)
+            player.hide()
+            player.lives -= 1
+            player.shield = 100
+
+    if player.lives == 0 and not death_explosion.alive():
+        running = False
 
     # Draw / render
     screen.fill(BLACK)
@@ -76,6 +84,7 @@ while running:
     all_sprites.draw(screen)
     draw_text(screen, str(score), 18, WIDTH / 2, 10)
     draw_shield_bar(screen, 5, 5, player.shield)
+    draw_lives(screen, WIDTH - 100, 5, player.lives, player_mini_img)
     # *after* drawing everything, flip the display
     pygame.display.flip()
 
