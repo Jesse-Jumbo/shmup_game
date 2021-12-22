@@ -177,6 +177,22 @@ class Bullet(pygame.sprite.Sprite):                # 宣告一個Bullet類別屬
         self.rect.y += self.speed_y                # 將Bullet的rect的Y軸隨著speed_y變化
         # kill if it moves off the top of the screen
         if self.rect.bottom < 0:                   # 如果rect的bottom小於0(也就是X<0 => 超出螢幕上方界限)
+            self.kill()
+
+class Pow(pygame.sprite.Sprite):
+    def __init__(self, center):
+        pygame.sprite.Sprite.__init__(self)
+        self.type = random.choice(['shield', 'gun'])
+        self.image = powrup_images[self.type]
+        self.image.set_colorkey(BLACK)
+        self.rect = self.image.get_rect()
+        self.rect.center = center
+        self.speed_y = 5
+
+    def update(self):                              # 定義Bullet的update，用於下面的game loop
+        self.rect.y += self.speed_y                # 將Bullet的rect的Y軸隨著speed_y變化
+        # kill if it moves off the top of the screen
+        if self.rect.top > HEIGHT:                   # 如果rect的bottom小於0(也就是X<0 => 超出螢幕上方界限)
             self.kill()                            # pygame內建函數.kill()可從任何Group中刪除sprite(在這就是刪除Bullet)
 
 
@@ -237,6 +253,10 @@ for i in range(9):
     img.set_colorkey(BLACK)
     explosion_anim['player'].append(img)
 
+powrup_images = {}
+powrup_images['shield'] = pygame.image.load(path.join(img_dir, 'shield_gold.png')).convert()
+powrup_images['gun'] = pygame.image.load(path.join(img_dir, 'bolt_gold.png')).convert()
+
 # Load all game sounds
 shoot_sound = pygame.mixer.Sound(path.join(snd_dir, 'pew.wav'))
 expl_sounds = []
@@ -249,6 +269,7 @@ pygame.mixer.music.set_volume(0.4)
 all_sprites = pygame.sprite.Group()                # 使用Group宣告物件all_sprites # all_sprites拿來做為所有sprite物件的集合
 mobs = pygame.sprite.Group()                       # 宣告一個mobs，將它加入到pygame.sprite.Group
 bullets = pygame.sprite.Group()                    # 將bullets添加到pygame.sprite.Group作儲存
+powrups = pygame.sprite.Group()
 player = Player()                                  # 用Player class宣告物件player
 all_sprites.add(player)                            # 把player加入all_sprites，並且因為player是一個Group()也是一個class才成立
 for i in range(8):                                 # 讓 i 循環8次，執行以下(使螢幕內的Mob總是維持在8位):
@@ -278,6 +299,10 @@ while running:                                     # 執行running是True的時�
         random.choice(expl_sounds).play()
         expl = Explosion(hit.rect.center, 'lg')
         all_sprites.add(expl)
+        if random.random() > 0.9:
+            pow = Pow(hit.center)
+            all_sprites.add(pow)
+            powrups.add(pow)
         newmob()
 
     # check to see if a mob hit the player         # 第四個參數甚麼都不寫就默認是rect，你可以輸入你要判定的是甚麼，這裡更正為collide_circle
