@@ -47,10 +47,19 @@ while running:
         now = pygame.time.get_ticks()
         if now - player.last_shot > player.shoot_delay:
             player.last_shot = now
-            bullet = Bullet(player.rect.centerx, player.rect.top)
-            all_sprites.add(bullet)
-            bullets.add(bullet)
-            shoot_sound.play()
+            if player.power == 1:
+                bullet = Bullet(player.rect.centerx, player.rect.top)
+                all_sprites.add(bullet)
+                bullets.add(bullet)
+                shoot_sound.play()
+            if player.power >= 2:
+                bullet1 = Bullet(player.rect.left, player.rect.centery)
+                bullet2 = Bullet(player.rect.right, player.rect.centery)
+                all_sprites.add(bullet1)
+                all_sprites.add(bullet2)
+                bullets.add(bullet1)
+                bullets.add(bullet2)
+                shoot_sound.play()
 
     # Update
     all_sprites.update()
@@ -73,11 +82,13 @@ while running:
     for hit in hits:
         if hit.type == 'shield':
             player.shield += random.randrange(10, 30)
+            # shield_sound.player()
             if player.shield >= 100:
                 player.shield = 100
 
         if hit.type == 'gun':
-            pass
+            player.powerup()
+            # power_sound.player()
     # check to see if a mob hit the player
     # hits = pygame.sprite.spritecollide(player, mobs, True, pygame.sprite.collide_circle)
     # for hit in hits:

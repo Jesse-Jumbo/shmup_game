@@ -11,7 +11,7 @@ class Pow(pygame.sprite.Sprite):
         self.image.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
         self.rect.center = center
-        self.speed_y = 2
+        self.speed_y = 5
 
     def update(self):
         self.rect.y += self.speed_y

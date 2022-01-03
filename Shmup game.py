@@ -14,6 +14,7 @@ snd_dir = path.join(path.dirname(__file__), 'snd')
 WIDTH = 480
 HEIGHT = 600
 FPS = 60
+POWERUP_TIME = 5000
 
 # define colors                                    #(red, green, blue)
 WHITE = (255, 255, 255)
@@ -84,8 +85,15 @@ class Player(pygame.sprite.Sprite):                # 宣告一個class Player把
         self.lives = 3
         self.hidden = False
         self.hide_timer = pygame.time.get_ticks()
+        self.power = 1
+        self.power_time = pygame.time.get_ticks()
 
     def update(self):                              # 宣告一個update函式，在下面game loop引用到它
+        # timeout for powerups
+        if self.power >= 2 and pygame.time.get_ticks() - self.power_time > POWERUP_TIME:
+            self.power -= 1
+            self.power_time = pygame.time.get_ticks()
+
         # unhide if hidden
         if self.hidden and pygame.time.get_ticks() - self.hide_timer > 1000:
             self.hidden = False
@@ -109,14 +117,27 @@ class Player(pygame.sprite.Sprite):                # 宣告一個class Player把
         if self.rect.left < 0:                     # 如果rect.left小於0
             self.rect.left = 0                     # 將rect.left等於0
 
+    def powerup(self):
+        self.power += 1
+        self.power_time = pygame.time.get_ticks()
+
     def shoot(self):                               # 在玩家這裡新增一項物件shoot子彈用來讓我們射擊
         now = pygame.time.get_ticks()
         if now - self.last_shot > self.shoot_delay:
             self.last_shot = now
-            bullet = Bullet(self.rect.centerx, self.rect.top)               # 產生一個新的bullet它是來自Bullet(x, y)，它是從self玩家的rect的centerx(x軸中心)和top(最上方)生成
-            all_sprites.add(bullet)                    # 將bullet加入到all_sprites(方便被繪製和更新)
-            bullets.add(bullet)                        # 把bullet加入bullets(用於下面hits判斷)
-            shoot_sound.play()
+            if self.power == 1:
+                bullet = Bullet(self.rect.centerx, self.rect.top)               # 產生一個新的bullet它是來自Bullet(x, y)，它是從self玩家的rect的centerx(x軸中心)和top(最上方)生成
+                all_sprites.add(bullet)                    # 將bullet加入到all_sprites(方便被繪製和更新)
+                bullets.add(bullet)                        # 把bullet加入bullets(用於下面hits判斷)
+                shoot_sound.play()
+            if self.power >= 2:
+                bullet1 = Bullet(self.rect.left, self.rect.centery)
+                bullet2 = Bullet(self.rect.right, self.rect.centery)
+                all_sprites.add(bullet1)
+                all_sprites.add(bullet2)
+                bullets.add(bullet1)
+                bullets.add(bullet2)
+                shoot_sound.play()
 
     def hide(self):
         # hide the player temporarily
@@ -187,7 +208,7 @@ class Pow(pygame.sprite.Sprite):
         self.image.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
         self.rect.center = center
-        self.speed_y = 2
+        self.speed_y = 5
 
     def update(self):
         self.rect.y += self.speed_y
@@ -259,6 +280,8 @@ powerup_images['gun'] = pygame.image.load(path.join(img_dir, 'bolt_gold.png')).c
 
 # Load all game sounds
 shoot_sound = pygame.mixer.Sound(path.join(snd_dir, 'pew.wav'))
+# shield_sound = pygame.mixer.Sound(path.join(snd_dir, 'pew4.wav'))
+# power_sound = pygame.mixer.Sound(path.join(snd_dir, 'pew5.wav'))
 expl_sounds = []
 for snd in ['expl3.wav', 'expl6.wav']:
     expl_sounds.append(pygame.mixer.Sound(path.join(snd_dir, snd)))
@@ -309,10 +332,13 @@ while running:                                     # 執行running是True的時�
     for hit in hits:
         if hit.type == 'shield':
             player.shield += random.randrange(10, 30)
+            # shield_sound.player()
             if player.shield >= 100:
                 player.shield = 100
         if hit.type == 'gun':
-            pass
+            player.powerup()
+            # power_sound.player()
+            
     # check to see if a mob hit the player         # 第四個參數甚麼都不寫就默認是rect，你可以輸入你要判定的是甚麼，這裡更正為collide_circle
     hits = pygame.sprite.spritecollide(player, mobs, True, pygame.sprite.collide_circle)             # 定義hits為引用pygame內建函數spritecollide(前兩個參數，為sprite(前者)與要檢查是否碰撞到它的Group(後者), 回傳list(儲存所有碰撞到的所有事件(如果沒有則為空list))，後參數True代表kill，False代表保留)來判斷重疊
     for hit in hits:                                       # 如果hits是...(如果if判斷式內的參數有東西，默認為真 => 執行要求)

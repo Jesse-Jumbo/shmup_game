@@ -8,6 +8,7 @@ pygame.mixer.init()
 WIDTH = 480
 HEIGHT = 600
 FPS = 60
+POWERUP_TIME = 5000
 
 img_dir = path.join(path.dirname(__file__), '../../img')
 snd_dir = path.join(path.dirname(__file__), '../../snd')
@@ -71,6 +72,10 @@ powerup_images['gun'] = pygame.image.load(path.join(img_dir, 'bolt_gold.png')).c
 
 # Load all game sounds
 shoot_sound = pygame.mixer.Sound(path.join(snd_dir, 'pew.wav'))
+# TODO add sound for powerups
+# shield_sound = pygame.mixer.Sound(path.join(snd_dir, 'pew4.wav'))
+# power_sound = pygame.mixer.Sound(path.join(snd_dir, 'pew5.wav'))
+
 expl_sounds = []
 for snd in ['expl3.wav', 'expl6.wav']:
     expl_sounds.append(pygame.mixer.Sound(path.join(snd_dir, snd)))
