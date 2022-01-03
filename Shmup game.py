@@ -241,6 +241,23 @@ class Explosion(pygame.sprite.Sprite):
                 self.rect = self.image.get_rect()
                 self.rect.center = center
 
+
+def show_go_screen():
+    screen.blit(background, background_rect)
+    draw_text(screen, "SHMUP!", 64, WIDTH / 2, HEIGHT / 4)
+    draw_text(screen, "Arrow keys move, Space to fire", 22, WIDTH / 2, HEIGHT / 2)
+    draw_text(screen, "Press a key to begin", 18, WIDTH / 2, HEIGHT * 3 / 4)
+    pygame.display.flip()
+    waiting = True
+    while waiting:
+        clock.tick(FPS)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+            if event.type == pygame.KEYUP:
+                waiting = False
+
+
 # Load all game graphics                           # we have to use the convert function to load all graphics in the pygame
 background = pygame.image.load(path.join(img_dir, "Space Shooter Background - Imgur.png")).convert()
 background_rect = background.get_rect()            # define the background_rect equals the rectangle of background
@@ -289,28 +306,33 @@ player_die_sound = pygame.mixer.Sound(path.join(snd_dir, 'rumble1.ogg'))
 pygame.mixer.music.load(path.join(snd_dir, 'tgfcoder-FrozenJam-SeamlessLoop.ogg'))
 pygame.mixer.music.set_volume(0.4)
 
-all_sprites = pygame.sprite.Group()                # 使用Group宣告物件all_sprites # all_sprites拿來做為所有sprite物件的集合
-mobs = pygame.sprite.Group()                       # 宣告一個mobs，將它加入到pygame.sprite.Group
-bullets = pygame.sprite.Group()                    # 將bullets添加到pygame.sprite.Group作儲存
-powerups = pygame.sprite.Group()
-player = Player()                                  # 用Player class宣告物件player
-all_sprites.add(player)                            # 把player加入all_sprites，並且因為player是一個Group()也是一個class才成立
-for i in range(8):                                 # 讓 i 循環8次，執行以下(使螢幕內的Mob總是維持在8位):
-    newmob()
 
-score = 0                                          # initialize our score to 0 after game loop
+
 pygame.mixer.music.play(loops=-1)
-
 # Game loop
+game_over = True
 running = True                                     # 設定一個變數running，他的初始值是Ture，所以只要我們設定running是False循環就會結束
 while running:                                     # 執行running是True的時候(肯定句)
+    if game_over:
+        show_go_screen()
+        game_over = False
+        all_sprites = pygame.sprite.Group()                # 使用Group宣告物件all_sprites # all_sprites拿來做為所有sprite物件的集合
+        mobs = pygame.sprite.Group()                       # 宣告一個mobs，將它加入到pygame.sprite.Group
+        bullets = pygame.sprite.Group()                    # 將bullets添加到pygame.sprite.Group作儲存
+        powerups = pygame.sprite.Group()
+        player = Player()                                  # 用Player class宣告物件player
+        all_sprites.add(player)                            # 把player加入all_sprites，並且因為player是一個Group()也是一個class才成立
+        for i in range(8):                                 # 讓 i 循環8次，執行以下(使螢幕內的Mob總是維持在8位):
+            newmob()
+        score = 0  # initialize our score to 0 before game start
+
     # keep loop running at the right speed
     clock.tick(FPS)                                # 檢查遊戲時間內的FPS是否保持在我們所宣告的
     # Process input (events)  #events是任何遊戲之外的輸入，你希望電腦能知道的(然後才能選擇做出甚麼反應)
     for event in pygame.event.get():               # event在pygame.event.get()裡，event.get()的回傳值是list(Eventlist)
         # check for closing window
         if event.type == pygame.QUIT:              # event按下 是 pygame.QUIT時
-            running = False                        # running會錯誤，也就是while running程式會關閉
+            running = False                            # runing為False(也就是將執行while迴圈的條件設為不成立 = 停止更新遊戲結束)
 
     # Update
     all_sprites.update()                           # 在game loop裡update我們在上面所宣告的sprites
@@ -338,7 +360,7 @@ while running:                                     # 執行running是True的時�
         if hit.type == 'gun':
             player.powerup()
             # power_sound.player()
-            
+
     # check to see if a mob hit the player         # 第四個參數甚麼都不寫就默認是rect，你可以輸入你要判定的是甚麼，這裡更正為collide_circle
     hits = pygame.sprite.spritecollide(player, mobs, True, pygame.sprite.collide_circle)             # 定義hits為引用pygame內建函數spritecollide(前兩個參數，為sprite(前者)與要檢查是否碰撞到它的Group(後者), 回傳list(儲存所有碰撞到的所有事件(如果沒有則為空list))，後參數True代表kill，False代表保留)來判斷重疊
     for hit in hits:                                       # 如果hits是...(如果if判斷式內的參數有東西，默認為真 => 執行要求)
@@ -356,7 +378,7 @@ while running:                                     # 執行running是True的時�
 
     # if the player died and the explosion has finished playing
     if player.lives == 0 and not death_explosion.alive():
-        running = False                            # runing為False(也就是將執行while迴圈的條件設為不成立 = 停止更新遊戲結束)
+        game_over = True
 
     # Draw / render
     screen.fill(BLACK)                             # 設定螢幕填滿(你想要的XX色)
