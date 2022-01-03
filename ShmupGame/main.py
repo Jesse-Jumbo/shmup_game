@@ -3,7 +3,6 @@ import random
 import pygame
 
 from ShmupGame.ShmupModule.Pow import Pow
-from ShmupGame.ShmupModule.show_go_screen import show_go_screen
 from ShmupModule.mob import Mob
 from ShmupModule.player import Player
 from ShmupModule.bullet import Bullet
@@ -16,36 +15,26 @@ from ShmupModule.draw_lives import draw_lives
 
 # initialize
 pygame.init()
-
-
 pygame.mixer.init()
 
-origin_all_sprites = all_sprites
-origin_mobs = mobs
+
+
+score = 0
 
 
 # Let all sprites can be added and added to all_sprites
+player = Player()
+all_sprites.add(player)
+for i in range(8):
+    newmob()
 
+bullets = pygame.sprite.Group()
+powerups = pygame.sprite.Group()
 
 pygame.mixer.music.play(loops=-1)
 # Game loop
-game_over = True
 running = True
 while running:
-    if game_over:
-        show_go_screen()
-        game_over = False
-        all_sprites = all_sprites.copy()
-        all_sprites = pygame.sprite.Group()
-        mobs = mobs.copy()
-        mobs = pygame.sprite.Group()
-        bullets = pygame.sprite.Group()
-        powerups = pygame.sprite.Group()
-        player = Player()
-        all_sprites.add(player)
-        for i in range(8):
-            newmob()
-        score = 0
     # keep loop running at the right speed
     clock.tick(FPS)
     # Process input (events)
@@ -113,9 +102,39 @@ while running:
             player.hide()
             player.lives -= 1
             player.shield = 100
+        if 100 >= player.shield > 90:
+            player.image = player0_5_img
+            player.hit_changes = pygame.time.get_ticks()
+        elif 90 >= player.shield > 80:
+            player.image = player1_5_img
+            player.hit_changes = pygame.time.get_ticks()
+        elif 80 >= player.shield > 70:
+            player.image = player2_5_img
+            player.hit_changes = pygame.time.get_ticks()
+        elif 70 >= player.shield > 60:
+            player.image = player3_5_img
+            player.hit_changes = pygame.time.get_ticks()
+        elif 60 >= player.shield > 50:
+            player.image = player4_5_img
+            player.hit_changes = pygame.time.get_ticks()
+        elif 50 >= player.shield > 40:
+            player.image = player5_5_img
+            player.hit_changes = pygame.time.get_ticks()
+        elif 40 >= player.shield > 30:
+            player.image = player6_5_img
+            player.hit_changes = pygame.time.get_ticks()
+        elif 30 >= player.shield > 20:
+            player.image = player7_5_img
+            player.hit_changes = pygame.time.get_ticks()
+        elif 20 >= player.shield > 10:
+            player.image = player8_5_img
+            player.hit_changes = pygame.time.get_ticks()
+        elif 10 >= player.shield > 1:
+            player.image = player9_5_img
+            player.hit_changes = pygame.time.get_ticks()
 
     if player.lives == 0 and not death_explosion.alive():
-        game_over = True
+        running = False
 
     # Draw / render
     screen.fill(BLACK)
@@ -123,7 +142,7 @@ while running:
     all_sprites.draw(screen)
     draw_text(screen, str(score), 18, WIDTH / 2, 10)
     draw_shield_bar(screen, 5, 5, player.shield)
-    draw_lives(screen, WIDTH - 100, 5, player.lives, player_mini_img)
+    draw_lives(screen, WIDTH - 100, 5, player.lives, lives_img)
     # *after* drawing everything, flip the display
     pygame.display.flip()
 
