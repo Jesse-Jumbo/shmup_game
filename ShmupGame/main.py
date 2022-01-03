@@ -90,21 +90,51 @@ while running:
             player.powerup()
             # power_sound.player()
     # check to see if a mob hit the player
-    # hits = pygame.sprite.spritecollide(player, mobs, True, pygame.sprite.collide_circle)
-    # for hit in hits:
-    #     player.shield -= hit.radius * 2
-    #     expl = Explosion(hit.rect.center, 'sm')
-    #     all_sprites.add(expl)
-    #     newmob()
-    #     if player.shield <= 0:
-    #         death_explosion = Explosion(player.rect.center, 'player')
-    #         all_sprites.add(death_explosion)
-    #         player.hide()
-    #         player.lives -= 1
-    #         player.shield = 100
-    #
-    # if player.lives == 0 and not death_explosion.alive():
-    #     running = False
+    hits = pygame.sprite.spritecollide(player, mobs, True, pygame.sprite.collide_circle)
+    for hit in hits:
+        player.shield -= hit.radius * 2
+        expl = Explosion(hit.rect.center, 'sm')
+        all_sprites.add(expl)
+        newmob()
+        if player.shield <= 0:
+            death_explosion = Explosion(player.rect.center, 'player')
+            all_sprites.add(death_explosion)
+            player.hide()
+            player.lives -= 1
+            player.shield = 100
+        if 100 >= player.shield > 90:
+            player.image = player0_5_img
+            player.hit_changes = pygame.time.get_ticks()
+        elif 90 >= player.shield > 80:
+            player.image = player1_5_img
+            player.hit_changes = pygame.time.get_ticks()
+        elif 80 >= player.shield > 70:
+            player.image = player2_5_img
+            player.hit_changes = pygame.time.get_ticks()
+        elif 70 >= player.shield > 60:
+            player.image = player3_5_img
+            player.hit_changes = pygame.time.get_ticks()
+        elif 60 >= player.shield > 50:
+            player.image = player4_5_img
+            player.hit_changes = pygame.time.get_ticks()
+        elif 50 >= player.shield > 40:
+            player.image = player5_5_img
+            player.hit_changes = pygame.time.get_ticks()
+        elif 40 >= player.shield > 30:
+            player.image = player6_5_img
+            player.hit_changes = pygame.time.get_ticks()
+        elif 30 >= player.shield > 20:
+            player.image = player7_5_img
+            player.hit_changes = pygame.time.get_ticks()
+        elif 20 >= player.shield > 10:
+            player.image = player8_5_img
+            player.hit_changes = pygame.time.get_ticks()
+        elif 10 >= player.shield > 1:
+            player.image = player9_5_img
+            player.hit_changes = pygame.time.get_ticks()
+
+    if player.lives == 0 and not death_explosion.alive():
+        running = False
 
     # Draw / render
     screen.fill(BLACK)
@@ -112,7 +142,7 @@ while running:
     all_sprites.draw(screen)
     draw_text(screen, str(score), 18, WIDTH / 2, 10)
     draw_shield_bar(screen, 5, 5, player.shield)
-    draw_lives(screen, WIDTH - 100, 5, player.lives, player_mini_img)
+    draw_lives(screen, WIDTH - 100, 5, player.lives, lives_img)
     # *after* drawing everything, flip the display
     pygame.display.flip()
 
