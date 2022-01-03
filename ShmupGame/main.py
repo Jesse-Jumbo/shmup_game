@@ -3,6 +3,7 @@ import random
 import pygame
 
 from ShmupGame.ShmupModule.Pow import Pow
+from ShmupGame.ShmupModule.show_go_screen import show_go_screen
 from ShmupModule.mob import Mob
 from ShmupModule.player import Player
 from ShmupModule.bullet import Bullet
@@ -15,26 +16,36 @@ from ShmupModule.draw_lives import draw_lives
 
 # initialize
 pygame.init()
+
+
 pygame.mixer.init()
 
-
-
-score = 0
+origin_all_sprites = all_sprites
+origin_mobs = mobs
 
 
 # Let all sprites can be added and added to all_sprites
-player = Player()
-all_sprites.add(player)
-for i in range(8):
-    newmob()
 
-bullets = pygame.sprite.Group()
-powerups = pygame.sprite.Group()
 
 pygame.mixer.music.play(loops=-1)
 # Game loop
+game_over = True
 running = True
 while running:
+    if game_over:
+        show_go_screen()
+        game_over = False
+        all_sprites = all_sprites.copy()
+        all_sprites = pygame.sprite.Group()
+        mobs = mobs.copy()
+        mobs = pygame.sprite.Group()
+        bullets = pygame.sprite.Group()
+        powerups = pygame.sprite.Group()
+        player = Player()
+        all_sprites.add(player)
+        for i in range(8):
+            newmob()
+        score = 0
     # keep loop running at the right speed
     clock.tick(FPS)
     # Process input (events)
@@ -90,21 +101,21 @@ while running:
             player.powerup()
             # power_sound.player()
     # check to see if a mob hit the player
-    # hits = pygame.sprite.spritecollide(player, mobs, True, pygame.sprite.collide_circle)
-    # for hit in hits:
-    #     player.shield -= hit.radius * 2
-    #     expl = Explosion(hit.rect.center, 'sm')
-    #     all_sprites.add(expl)
-    #     newmob()
-    #     if player.shield <= 0:
-    #         death_explosion = Explosion(player.rect.center, 'player')
-    #         all_sprites.add(death_explosion)
-    #         player.hide()
-    #         player.lives -= 1
-    #         player.shield = 100
-    #
-    # if player.lives == 0 and not death_explosion.alive():
-    #     running = False
+    hits = pygame.sprite.spritecollide(player, mobs, True, pygame.sprite.collide_circle)
+    for hit in hits:
+        player.shield -= hit.radius * 2
+        expl = Explosion(hit.rect.center, 'sm')
+        all_sprites.add(expl)
+        newmob()
+        if player.shield <= 0:
+            death_explosion = Explosion(player.rect.center, 'player')
+            all_sprites.add(death_explosion)
+            player.hide()
+            player.lives -= 1
+            player.shield = 100
+
+    if player.lives == 0 and not death_explosion.alive():
+        game_over = True
 
     # Draw / render
     screen.fill(BLACK)
