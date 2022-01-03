@@ -183,17 +183,17 @@ class Pow(pygame.sprite.Sprite):
     def __init__(self, center):
         pygame.sprite.Sprite.__init__(self)
         self.type = random.choice(['shield', 'gun'])
-        self.image = powrup_images[self.type]
+        self.image = powerup_images[self.type]
         self.image.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
         self.rect.center = center
-        self.speed_y = 5
+        self.speed_y = 2
 
-    def update(self):                              # 定義Bullet的update，用於下面的game loop
-        self.rect.y += self.speed_y                # 將Bullet的rect的Y軸隨著speed_y變化
+    def update(self):
+        self.rect.y += self.speed_y
         # kill if it moves off the top of the screen
-        if self.rect.top > HEIGHT:                   # 如果rect的bottom小於0(也就是X<0 => 超出螢幕上方界限)
-            self.kill()                            # pygame內建函數.kill()可從任何Group中刪除sprite(在這就是刪除Bullet)
+        if self.rect.top > HEIGHT:
+            self.kill()
 
 
 class Explosion(pygame.sprite.Sprite):
@@ -253,9 +253,9 @@ for i in range(9):
     img.set_colorkey(BLACK)
     explosion_anim['player'].append(img)
 
-powrup_images = {}
-powrup_images['shield'] = pygame.image.load(path.join(img_dir, 'shield_gold.png')).convert()
-powrup_images['gun'] = pygame.image.load(path.join(img_dir, 'bolt_gold.png')).convert()
+powerup_images = {}
+powerup_images['shield'] = pygame.image.load(path.join(img_dir, 'shield_gold.png')).convert()
+powerup_images['gun'] = pygame.image.load(path.join(img_dir, 'bolt_gold.png')).convert()
 
 # Load all game sounds
 shoot_sound = pygame.mixer.Sound(path.join(snd_dir, 'pew.wav'))
@@ -269,7 +269,7 @@ pygame.mixer.music.set_volume(0.4)
 all_sprites = pygame.sprite.Group()                # 使用Group宣告物件all_sprites # all_sprites拿來做為所有sprite物件的集合
 mobs = pygame.sprite.Group()                       # 宣告一個mobs，將它加入到pygame.sprite.Group
 bullets = pygame.sprite.Group()                    # 將bullets添加到pygame.sprite.Group作儲存
-powrups = pygame.sprite.Group()
+powerups = pygame.sprite.Group()
 player = Player()                                  # 用Player class宣告物件player
 all_sprites.add(player)                            # 把player加入all_sprites，並且因為player是一個Group()也是一個class才成立
 for i in range(8):                                 # 讓 i 循環8次，執行以下(使螢幕內的Mob總是維持在8位):
@@ -300,11 +300,19 @@ while running:                                     # 執行running是True的時�
         expl = Explosion(hit.rect.center, 'lg')
         all_sprites.add(expl)
         if random.random() > 0.9:
-            pow = Pow(hit.center)
+            pow = Pow(hit.rect.center)
             all_sprites.add(pow)
-            powrups.add(pow)
+            powerups.add(pow)
         newmob()
-
+    # check to see if player hit a powerup
+    hits = pygame.sprite.spritecollide(player, powerups, True)
+    for hit in hits:
+        if hit.type == 'shield':
+            player.shield += random.randrange(10, 30)
+            if player.shield >= 100:
+                player.shield = 100
+        if hit.type == 'gun':
+            pass
     # check to see if a mob hit the player         # 第四個參數甚麼都不寫就默認是rect，你可以輸入你要判定的是甚麼，這裡更正為collide_circle
     hits = pygame.sprite.spritecollide(player, mobs, True, pygame.sprite.collide_circle)             # 定義hits為引用pygame內建函數spritecollide(前兩個參數，為sprite(前者)與要檢查是否碰撞到它的Group(後者), 回傳list(儲存所有碰撞到的所有事件(如果沒有則為空list))，後參數True代表kill，False代表保留)來判斷重疊
     for hit in hits:                                       # 如果hits是...(如果if判斷式內的參數有東西，默認為真 => 執行要求)
