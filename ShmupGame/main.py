@@ -2,6 +2,7 @@ import random
 
 import pygame
 
+from ShmupGame.ShmupModule.Die_anima import Die_anima
 from ShmupGame.ShmupModule.Pow import Pow
 from ShmupModule.mob import Mob
 from ShmupModule.player import Player
@@ -17,7 +18,7 @@ from ShmupModule.draw_lives import draw_lives
 pygame.init()
 pygame.mixer.init()
 
-
+stop = False
 
 score = 0
 
@@ -61,8 +62,12 @@ while running:
                 bullets.add(bullet2)
                 shoot_sound.play()
 
+    if keystate[pygame.K_p]:
+        stop = not stop
+
     # Update
-    all_sprites.update()
+    if not stop:
+        all_sprites.update()
 
     # check to see if a bullet hit a mob
     hits = pygame.sprite.groupcollide(mobs, bullets, True, True)
@@ -99,9 +104,10 @@ while running:
         if player.shield <= 0:
             death_explosion = Explosion(player.rect.center, 'player')
             all_sprites.add(death_explosion)
+            die_anima = Die_anima(player.rect.midbottom)
+            all_sprites.add(die_anima)
             player.hide()
-            player.lives -= 1
-            player.shield = 100
+
         if 100 >= player.shield > 90:
             player.image = player0_5_img
             player.hit_changes = pygame.time.get_ticks()
@@ -132,18 +138,26 @@ while running:
         elif 10 >= player.shield > 1:
             player.image = player9_5_img
             player.hit_changes = pygame.time.get_ticks()
+    if player.shield <= 0 and not die_anima.alive():
+        player.lives -= 1
+        player.shield = 100
 
-    if player.lives == 0 and not death_explosion.alive():
-        running = False
+    # if player.lives == 0 and not death_explosion.alive():
+    #     running = False
 
     # Draw / render
-    screen.fill(BLACK)
+    # screen.fill(BLACK)
     screen.blit(background, background_rect)
     all_sprites.draw(screen)
     draw_text(screen, str(score), 18, WIDTH / 2, 10)
     draw_shield_bar(screen, 5, 5, player.shield)
     draw_lives(screen, WIDTH - 100, 5, player.lives, lives_img)
+    # check hit rect
+    # pygame.draw.circle(screen, BLACK, player.rect.center, player.radius, 1)
+    # for mob in mobs:
+    #     pygame.draw.circle(screen, RED, mob.rect.center, mob.radius, 1)
     # *after* drawing everything, flip the display
+
     pygame.display.flip()
 
 pygame.quit()

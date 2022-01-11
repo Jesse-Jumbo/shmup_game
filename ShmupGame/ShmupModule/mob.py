@@ -10,7 +10,6 @@ class Mob(pygame.sprite.Sprite):
         self.image = self.image_orig.copy()                         # initialize our image is copied from the original
         self.rect = self.image.get_rect()                           # initialize our rect is to get the image rectangle
         self.radius = int(self.rect.width * .85 / 2)                # initialize the radius of our circle rect
-        # pygame.draw.circle(self.image, RED, self.rect.center, self.radius)
         self.rect.x = random.randrange(0, WIDTH - self.rect.width)  # The initial position of rect.x will be randomly within the range of 0 to WIDTH(minus the width of rect)\
         self.rect.y = random.randrange(-150, -100)                  # the initial posution of rect.y will be randomly within the range of-150 to -100 position
         self.speed_y = random.randrange(1, 8)                       # initialize the y of speed will random at randrange 1~8

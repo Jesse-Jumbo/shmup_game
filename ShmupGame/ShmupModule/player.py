@@ -8,7 +8,7 @@ class Player(pygame.sprite.Sprite):
         self.image = player00_img
         self.image.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
-        self.radius = 20
+        self.radius = PLAYER_RADIUS
         # pygame.draw.circle(self.image, RED, self.rect.center, self.radius)
         self.rect.centerx = WIDTH / 2
         self.rect.bottom = HEIGHT - 10
@@ -27,33 +27,33 @@ class Player(pygame.sprite.Sprite):
     def update(self):
         now = pygame.time.get_ticks()                               # Declare the now equals game time ticks
         if now - self.hit_changes > 1000:                             # if the now
-            self.hit_changes
-            if 100 >= self.shield > 90:
-                self.image = player00_img
-            elif 90 >= self.shield > 80:
-                self.image = player01_img
-            elif 80 >= self.shield > 70:
-                self.image = player02_img
-            elif 70 >= self.shield > 60:
-                self.image = player03_img
-            elif 60 >= self.shield > 50:
-                self.image = player04_img
-            elif 50 >= self.shield > 40:
-                self.image = player05_img
-            elif 40 >= self.shield > 30:
-                self.image = player06_img
-            elif 30 >= self.shield > 20:
-                self.image = player07_img
-            elif 20 >= self.shield > 10:
-                self.image = player08_img
-            elif 10 >= self.shield > 1:
-                self.image = player09_img
+            self.hit_changes = now
+        if 100 >= self.shield > 90:
+            self.image = player00_img
+        elif 90 >= self.shield > 80:
+            self.image = player01_img
+        elif 80 >= self.shield > 70:
+            self.image = player02_img
+        elif 70 >= self.shield > 60:
+            self.image = player03_img
+        elif 60 >= self.shield > 50:
+            self.image = player04_img
+        elif 50 >= self.shield > 40:
+            self.image = player05_img
+        elif 40 >= self.shield > 30:
+            self.image = player06_img
+        elif 30 >= self.shield > 20:
+            self.image = player07_img
+        elif 20 >= self.shield > 10:
+            self.image = player08_img
+        elif 10 >= self.shield >= 1:
+            self.image = player09_img
         # timeout for powerups
         if self.power >= 2 and pygame.time.get_ticks() - self.power_time > POWERUP_TIME:
             self.power -= 1
             self.power_time = pygame.time.get_ticks()
         # unhide.if hidden
-        if self.hidden and pygame.time.get_ticks() - self.hide_timer > 1000:
+        if self.hidden and pygame.time.get_ticks() - self.hide_timer > 10000:
             self.hidden = False
             self.rect.centerx = WIDTH / 2
             self.rect.bottom = HEIGHT - 10

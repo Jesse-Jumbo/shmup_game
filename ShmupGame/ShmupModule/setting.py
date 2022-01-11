@@ -27,7 +27,7 @@ pygame.display.set_caption("Shmup!")
 clock = pygame.time.Clock()
 
 # Load BG
-background = pygame.image.load(path.join(img_dir, "background.png")).convert()
+background = pygame.image.load(path.join(img_dir, "background.png")).convert_alpha()
 background_rect = background.get_rect()
 
 '''font'''
@@ -55,11 +55,19 @@ player6_5_img = pygame.image.load(path.join(img_dir, "player6.5.png")).convert_a
 player7_5_img = pygame.image.load(path.join(img_dir, "player7.5.png")).convert_alpha()
 player8_5_img = pygame.image.load(path.join(img_dir, "player8.5.png")).convert_alpha()
 player9_5_img = pygame.image.load(path.join(img_dir, "player9.5.png")).convert_alpha()
+'''die'''
+player_die_list = []
+for i in range(0, 17):
+    player_die_list.append(pygame.image.load(path.join(img_dir, f"playerdie0{i}.png")).convert_alpha())
 # player_img = pygame.transform.scale(player_img, (55, 80))
 lives_img = pygame.image.load(path.join(img_dir, "lives.png")).convert_alpha()
 # player_mini_img = pygame.transform.scale(player_img, (25, 19))
 lives_img.set_colorkey(BLACK)
-bullet_img = pygame.image.load(path.join(img_dir, "laserBlue16.png")).convert()
+
+bullet_images = []
+for i in range(1, 7):
+    bullet_image = pygame.image.load(path.join(img_dir, f"bullet0{i}.png")).convert_alpha()
+    bullet_images.append(pygame.transform.scale(bullet_image, (17, 47)))
 meteor_list = ['meteorBrown_big1.png', 'meteorBrown_big2.png', 'meteorBrown_big3.png', 'meteorBrown_big4.png',
                'meteorBrown_med1.png', 'meteorBrown_med3.png', 'meteorBrown_small1.png', 'meteorBrown_small2.png',
                'meteorBrown_tiny1.png', 'meteorBrown_tiny2.png', 'meteorGrey_big1.png', 'meteorGrey_big2.png',
@@ -105,3 +113,6 @@ pygame.mixer.music.set_volume(0.4)
 all_sprites = pygame.sprite.Group()             # for we can more convenient to update all sprite
 
 mobs = pygame.sprite.Group()
+
+'''player setting'''
+PLAYER_RADIUS = 40
