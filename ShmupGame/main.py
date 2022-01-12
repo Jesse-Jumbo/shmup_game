@@ -44,7 +44,7 @@ while running:
         if event.type == pygame.QUIT:
             running = False
     keystate = pygame.key.get_pressed()
-    if keystate[pygame.K_SPACE]:
+    if keystate[pygame.K_SPACE] and not player.die_time:
         now = pygame.time.get_ticks()
         if now - player.last_shot > player.shoot_delay:
             player.last_shot = now

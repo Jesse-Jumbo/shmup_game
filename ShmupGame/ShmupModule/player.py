@@ -26,6 +26,8 @@ class Player(pygame.sprite.Sprite):
         self.die_time = False
 #
     def update(self):
+        if not self.die_time:
+            self.get_key()
         now = pygame.time.get_ticks()                               # Declare the now equals game time ticks
         if now - self.hit_changes > 1000:                             # if the now
             self.hit_changes = now
@@ -63,9 +65,12 @@ class Player(pygame.sprite.Sprite):
             self.power_time = pygame.time.get_ticks()
         # unhide.if hidden
         if self.hidden and self.frame == 0:
-            self.hidden = False
             self.rect.centerx = WIDTH / 2
             self.rect.bottom = HEIGHT - 10
+            self.power = 1
+            self.hidden = False
+
+    def get_key(self):
         self.speed_x = 0
         self.speed_y = 0
         key_state = pygame.key.get_pressed()
