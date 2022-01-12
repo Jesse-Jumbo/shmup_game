@@ -5,8 +5,7 @@ from .setting import *
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = player00_img
-        self.image.set_colorkey(BLACK)
+        self.image = player_images["100-91"][0]
         self.rect = self.image.get_rect()
         self.radius = PLAYER_RADIUS
         # pygame.draw.circle(self.image, RED, self.rect.center, self.radius)
@@ -23,37 +22,47 @@ class Player(pygame.sprite.Sprite):
         self.power = 1
         self.power_time = pygame.time.get_ticks()
         self.hit_changes = pygame.time.get_ticks()
+        self.frame = 0
+        self.die_time = False
 #
     def update(self):
         now = pygame.time.get_ticks()                               # Declare the now equals game time ticks
         if now - self.hit_changes > 1000:                             # if the now
             self.hit_changes = now
-        if 100 >= self.shield > 90:
-            self.image = player00_img
-        elif 90 >= self.shield > 80:
-            self.image = player01_img
-        elif 80 >= self.shield > 70:
-            self.image = player02_img
-        elif 70 >= self.shield > 60:
-            self.image = player03_img
-        elif 60 >= self.shield > 50:
-            self.image = player04_img
-        elif 50 >= self.shield > 40:
-            self.image = player05_img
-        elif 40 >= self.shield > 30:
-            self.image = player06_img
-        elif 30 >= self.shield > 20:
-            self.image = player07_img
-        elif 20 >= self.shield > 10:
-            self.image = player08_img
-        elif 10 >= self.shield >= 1:
-            self.image = player09_img
+            if 100 >= self.shield > 90:
+                self.image = player_images["100-91"][0]
+            elif 90 >= self.shield > 80:
+                self.image = player_images["90-81"][0]
+            elif 80 >= self.shield > 70:
+                self.image = player_images["80-71"][0]
+            elif 70 >= self.shield > 60:
+                self.image = player_images["70-61"][0]
+            elif 60 >= self.shield > 50:
+                self.image = player_images["60-51"][0]
+            elif 50 >= self.shield > 40:
+                self.image = player_images["50-41"][0]
+            elif 40 >= self.shield > 30:
+                self.image = player_images["40-31"][0]
+            elif 30 >= self.shield > 20:
+                self.image = player_images["30-21"][0]
+            elif 20 >= self.shield > 10:
+                self.image = player_images["20-11"][0]
+            elif 10 >= self.shield >= 1:
+                self.image = player_images["10-1"][0]
+        if self.shield <= 0:
+            self.die_time = True
+            self.img_anima(player_images["0"], self.rect.midbottom)
+            if self.frame == 0:
+                self.hide()
+                self.lives -= 1
+                self.die_time = False
+                self.shield = 100
         # timeout for powerups
         if self.power >= 2 and pygame.time.get_ticks() - self.power_time > POWERUP_TIME:
             self.power -= 1
             self.power_time = pygame.time.get_ticks()
         # unhide.if hidden
-        if self.hidden and pygame.time.get_ticks() - self.hide_timer > 10000:
+        if self.hidden and self.frame == 0:
             self.hidden = False
             self.rect.centerx = WIDTH / 2
             self.rect.bottom = HEIGHT - 10
@@ -86,4 +95,17 @@ class Player(pygame.sprite.Sprite):
     def hide(self):
         self.hidden = True
         self.hide_timer = pygame.time.get_ticks()
+        self.image = player_images["100-91"][0]
+        self.rect = self.image.get_rect()
         self.rect.center = (WIDTH / 2, HEIGHT + 200)
+
+    def img_anima(self, img_list, midbottom):
+
+        if int(self.frame) == len(img_list):
+            self.frame = 0
+        else:
+            change_image = img_list[int(self.frame)]
+            self.image = change_image
+            self.rect = self.image.get_rect()
+            self.rect.midbottom = midbottom
+            self.frame += 0.2

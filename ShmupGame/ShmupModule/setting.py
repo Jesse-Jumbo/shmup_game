@@ -35,30 +35,18 @@ font_name = pygame.font.match_font('arial')
 
 # Load other image
 '''player'''
-player00_img = pygame.image.load(path.join(img_dir, "player00.png")).convert_alpha()
-player01_img = pygame.image.load(path.join(img_dir, "player01.png")).convert_alpha()
-player02_img = pygame.image.load(path.join(img_dir, "player02.png")).convert_alpha()
-player03_img = pygame.image.load(path.join(img_dir, "player03.png")).convert_alpha()
-player04_img = pygame.image.load(path.join(img_dir, "player04.png")).convert_alpha()
-player05_img = pygame.image.load(path.join(img_dir, "player05.png")).convert_alpha()
-player06_img = pygame.image.load(path.join(img_dir, "player06.png")).convert_alpha()
-player07_img = pygame.image.load(path.join(img_dir, "player07.png")).convert_alpha()
-player08_img = pygame.image.load(path.join(img_dir, "player08.png")).convert_alpha()
-player09_img = pygame.image.load(path.join(img_dir, "player09.png")).convert_alpha()
-player0_5_img = pygame.image.load(path.join(img_dir, "player0.5.png")).convert_alpha()
-player1_5_img = pygame.image.load(path.join(img_dir, "player1.5.png")).convert_alpha()
-player2_5_img = pygame.image.load(path.join(img_dir, "player2.5.png")).convert_alpha()
-player3_5_img = pygame.image.load(path.join(img_dir, "player3.5.png")).convert_alpha()
-player4_5_img = pygame.image.load(path.join(img_dir, "player4.5.png")).convert_alpha()
-player5_5_img = pygame.image.load(path.join(img_dir, "player5.5.png")).convert_alpha()
-player6_5_img = pygame.image.load(path.join(img_dir, "player6.5.png")).convert_alpha()
-player7_5_img = pygame.image.load(path.join(img_dir, "player7.5.png")).convert_alpha()
-player8_5_img = pygame.image.load(path.join(img_dir, "player8.5.png")).convert_alpha()
-player9_5_img = pygame.image.load(path.join(img_dir, "player9.5.png")).convert_alpha()
-'''die'''
-player_die_list = []
+player_images = {"100-91": [], "90-81": [], "80-71": [], "70-61": [],"60-51": [], "50-41": [], "40-31": [], "30-21": [],
+                 "20-11": [], "10-1": [], "0": []}
+player_list = {"100-91": ["player00.png", "player0.5.png"], "90-81": ["player01.png", "player1.5.png"],
+                 "80-71": ["player02.png", "player2.5.png"], "70-61": ["player03.png", "player3.5.png"],
+                 "60-51": ["player04.png", "player4.5.png"], "50-41": ["player05.png", "player5.5.png"],
+                 "40-31": ["player06.png", "player6.5.png"], "30-21": ["player07.png", "player7.5.png"]
+                 , "20-11": ["player08.png", "player8.5.png"], "10-1": ["player09.png", "player9.5.png"], "0": []}
+for key, values in player_list.items():
+    for value in values:
+        player_images[key].append(pygame.image.load(path.join(img_dir, value)).convert_alpha())
 for i in range(0, 17):
-    player_die_list.append(pygame.image.load(path.join(img_dir, f"playerdie0{i}.png")).convert_alpha())
+    player_images["0"].append(pygame.image.load(path.join(img_dir, f"playerdie0{i}.png")).convert_alpha())
 # player_img = pygame.transform.scale(player_img, (55, 80))
 lives_img = pygame.image.load(path.join(img_dir, "lives.png")).convert_alpha()
 # player_mini_img = pygame.transform.scale(player_img, (25, 19))

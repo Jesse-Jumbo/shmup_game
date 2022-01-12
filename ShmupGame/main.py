@@ -97,53 +97,45 @@ while running:
     # check to see if a mob hit the player
     hits = pygame.sprite.spritecollide(player, mobs, True, pygame.sprite.collide_circle)
     for hit in hits:
-        player.shield -= hit.radius * 2
-        expl = Explosion(hit.rect.center, 'sm')
-        all_sprites.add(expl)
-        newmob()
-        if player.shield <= 0:
-            death_explosion = Explosion(player.rect.center, 'player')
-            all_sprites.add(death_explosion)
-            die_anima = Die_anima(player.rect.midbottom)
-            all_sprites.add(die_anima)
-            player.hide()
+        if not player.die_time:
+            player.shield -= hit.radius * 2
+            expl = Explosion(hit.rect.center, 'sm')
+            all_sprites.add(expl)
+            newmob()
 
-        if 100 >= player.shield > 90:
-            player.image = player0_5_img
-            player.hit_changes = pygame.time.get_ticks()
-        elif 90 >= player.shield > 80:
-            player.image = player1_5_img
-            player.hit_changes = pygame.time.get_ticks()
-        elif 80 >= player.shield > 70:
-            player.image = player2_5_img
-            player.hit_changes = pygame.time.get_ticks()
-        elif 70 >= player.shield > 60:
-            player.image = player3_5_img
-            player.hit_changes = pygame.time.get_ticks()
-        elif 60 >= player.shield > 50:
-            player.image = player4_5_img
-            player.hit_changes = pygame.time.get_ticks()
-        elif 50 >= player.shield > 40:
-            player.image = player5_5_img
-            player.hit_changes = pygame.time.get_ticks()
-        elif 40 >= player.shield > 30:
-            player.image = player6_5_img
-            player.hit_changes = pygame.time.get_ticks()
-        elif 30 >= player.shield > 20:
-            player.image = player7_5_img
-            player.hit_changes = pygame.time.get_ticks()
-        elif 20 >= player.shield > 10:
-            player.image = player8_5_img
-            player.hit_changes = pygame.time.get_ticks()
-        elif 10 >= player.shield > 1:
-            player.image = player9_5_img
-            player.hit_changes = pygame.time.get_ticks()
-    if player.shield <= 0 and not die_anima.alive():
-        player.lives -= 1
-        player.shield = 100
+            if 100 >= player.shield > 90:
+                player.image = player_images["100-91"][1]
+                player.hit_changes = pygame.time.get_ticks()
+            elif 90 >= player.shield > 80:
+                player.image = player_images["90-81"][1]
+                player.hit_changes = pygame.time.get_ticks()
+            elif 80 >= player.shield > 70:
+                player.image = player_images["80-71"][1]
+                player.hit_changes = pygame.time.get_ticks()
+            elif 70 >= player.shield > 60:
+                player.image = player_images["70-61"][1]
+                player.hit_changes = pygame.time.get_ticks()
+            elif 60 >= player.shield > 50:
+                player.image = player_images["60-51"][1]
+                player.hit_changes = pygame.time.get_ticks()
+            elif 50 >= player.shield > 40:
+                player.image = player_images["50-41"][1]
+                player.hit_changes = pygame.time.get_ticks()
+            elif 40 >= player.shield > 30:
+                player.image = player_images["40-31"][1]
+                player.hit_changes = pygame.time.get_ticks()
+            elif 30 >= player.shield > 20:
+                player.image = player_images["30-21"][1]
+                player.hit_changes = pygame.time.get_ticks()
+            elif 20 >= player.shield > 10:
+                player.image = player_images["20-11"][1]
+                player.hit_changes = pygame.time.get_ticks()
+            elif 10 >= player.shield > 1:
+                player.image = player_images["10-1"][1]
+                player.hit_changes = pygame.time.get_ticks()
 
-    # if player.lives == 0 and not death_explosion.alive():
-    #     running = False
+    if player.lives == 0 and player.frame == 0:
+        running = False
 
     # Draw / render
     # screen.fill(BLACK)
