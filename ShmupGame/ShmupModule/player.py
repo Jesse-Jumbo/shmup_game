@@ -113,4 +113,4 @@ class Player(pygame.sprite.Sprite):
             self.image = change_image
             self.rect = self.image.get_rect()
             self.rect.midbottom = midbottom
-            self.frame += 0.2
+            self.frame += 0.4

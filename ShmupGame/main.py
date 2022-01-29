@@ -97,11 +97,11 @@ while running:
     # check to see if a mob hit the player
     hits = pygame.sprite.spritecollide(player, mobs, True, pygame.sprite.collide_circle)
     for hit in hits:
+        newmob()
         if not player.die_time:
             player.shield -= hit.radius * 2
             expl = Explosion(hit.rect.center, 'sm')
             all_sprites.add(expl)
-            newmob()
 
             if 100 >= player.shield > 90:
                 player.image = player_images["100-91"][1]
@@ -135,8 +135,8 @@ while running:
                 player.hit_changes = pygame.time.get_ticks()
 
     if player.lives == 0 and player.frame == 0:
-        running = False
-
+        pass
+        # running = False
     # Draw / render
     # screen.fill(BLACK)
     screen.blit(background, background_rect)

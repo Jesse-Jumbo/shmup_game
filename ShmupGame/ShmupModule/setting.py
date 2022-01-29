@@ -56,14 +56,15 @@ bullet_images = []
 for i in range(1, 7):
     bullet_image = pygame.image.load(path.join(img_dir, f"bullet0{i}.png")).convert_alpha()
     bullet_images.append(pygame.transform.scale(bullet_image, (17, 47)))
-meteor_list = ['meteorBrown_big1.png', 'meteorBrown_big2.png', 'meteorBrown_big3.png', 'meteorBrown_big4.png',
-               'meteorBrown_med1.png', 'meteorBrown_med3.png', 'meteorBrown_small1.png', 'meteorBrown_small2.png',
-               'meteorBrown_tiny1.png', 'meteorBrown_tiny2.png', 'meteorGrey_big1.png', 'meteorGrey_big2.png',
-               'meteorGrey_big3.png', 'meteorGrey_big4.png', 'meteorGrey_med1.png', 'meteorGrey_med2.png',
-               'meteorGrey_small1.png', 'meteorGrey_small2.png', 'meteorGrey_tiny1.png', 'meteorGrey_tiny2.png']
+# meteor_list = ['meteorBrown_big1.png', 'meteorBrown_big2.png', 'meteorBrown_big3.png', 'meteorBrown_big4.png',
+#                'meteorBrown_med1.png', 'meteorBrown_med3.png', 'meteorBrown_small1.png', 'meteorBrown_small2.png',
+#                'meteorBrown_tiny1.png', 'meteorBrown_tiny2.png', 'meteorGrey_big1.png', 'meteorGrey_big2.png',
+#                'meteorGrey_big3.png', 'meteorGrey_big4.png', 'meteorGrey_med1.png', 'meteorGrey_med2.png',
+#                'meteorGrey_small1.png', 'meteorGrey_small2.png', 'meteorGrey_tiny1.png', 'meteorGrey_tiny2.png']
+meteor_list = ['mobbig.png']
 meteor_images = []
 for img in meteor_list:
-    meteor_images.append(pygame.image.load(path.join(img_dir, img)).convert())
+    meteor_images.append(pygame.image.load(path.join(img_dir, img)).convert_alpha())
 
 explosion_anim = {}
 explosion_anim['lg'] = []

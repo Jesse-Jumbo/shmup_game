@@ -30,7 +30,7 @@ class Mob(pygame.sprite.Sprite):
             self.rect.center = old_center
 
     def update(self):
-        self.rotate()
+        # self.rotate()
         self.rect.y += self.speed_y
         self.rect.x += self.speed_x
         if self.rect.top > HEIGHT + 10 or self.rect.left < -25 or self.rect.right > WIDTH + 20:
